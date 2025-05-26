@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+//aqui se esta importando el paquete de google fonts
+//para poder usar las fuentes de google en el tema de la aplicacion
+
 class AppTheme {
   static final theme = ThemeData(
     useMaterial3: true,

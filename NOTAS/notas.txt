@@ -1,0 +1,24 @@
+Tema: 
+Lista de tareas con animaciones que permiten agregar, palomear las tareas y cuando ya estan marcadas como realizadas 
+se muestran tachadas con una linea en medio mediante animaciones.
+
+
+primero revisamos las dependencias.
+pubspect.yaml 
+
+google_fonts: ^6.1.0
+dependencia que trae nuevas animaciones   
+flutter_staggered_animations: ^1.1.1
+
+
+carpeta screens: pantalla principal 
+carpeta temas: temas que estamos usando de google 
+widgets: esta seccionado por tarjetas 
+
+
+PRACTICA 
+
+EXPLICAR SOLO LAS FUNCIONALIDADES QUE ESTAMOS MOVIENDO 
+COMO:
+
+AnimatedContainer: 

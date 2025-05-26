@@ -21,20 +21,25 @@ class TaskCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 400),
-      opacity: isDone ? 0.6 : 1.0,
+      //-CAMBIO DE OPACIDAD-
+      // Cambia la opacidad del widget según el estado de isDone
+      // Si isDone es true, la opacidad será 0.4, de lo contrario será 1.0
+      opacity: isDone ? 0.4 : 1.0,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 400),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: isDone ? Colors.green.shade100 : Colors.white,
+          //-CAMBIO DE COLOR DE FONDO-
+          //se cambia el color de fondo de verde a color azul con un tono claro y sombra/opacidad a 200
+          color: isDone ? Colors.blue.shade200 : Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
               blurRadius: 8,
               offset: const Offset(0, 4),
-            )
+            ),
           ],
         ),
         child: ListTile(
@@ -44,7 +49,11 @@ class TaskCard extends StatelessWidget {
               animation: iconRotation,
               builder: (context, child) {
                 return Transform.rotate(
-                  angle: isDone ? iconRotation.value * pi : 0,
+                  //-ROTACION DEL ICONO-
+                  // El icono se rota según el valor de iconRotation
+                  // si isDone es true, se rota el icono de check.
+                  // se cambio para que tenga una rotacion de 90 grados
+                  angle: isDone ? iconRotation.value * (pi / 2) : 0,
                   child: Icon(
                     isDone ? Icons.check_circle : Icons.radio_button_unchecked,
                     color: isDone ? Colors.green : Colors.grey,
