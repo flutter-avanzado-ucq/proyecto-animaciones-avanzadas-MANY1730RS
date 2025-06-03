@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart'; // todas las nuevas animaciones son de esta dependencia
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import '../widgets/card_tarea.dart';
 import '../widgets/header.dart';
 import '../widgets/add_task_sheet.dart';
+import 'package:provider/provider.dart';
+import 'package:tareas/provider_task/task_provider.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
@@ -13,7 +15,6 @@ class TaskScreen extends StatefulWidget {
 
 class _TaskScreenState extends State<TaskScreen>
     with SingleTickerProviderStateMixin {
-  final List<Map<String, dynamic>> _tasks = [];
   late AnimationController _iconController;
 
   @override
@@ -21,7 +22,7 @@ class _TaskScreenState extends State<TaskScreen>
     super.initState();
     _iconController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 500),
     );
   }
 
@@ -31,29 +32,6 @@ class _TaskScreenState extends State<TaskScreen>
     super.dispose();
   }
 
-  void _addTask(String task) {
-    setState(() {
-      _tasks.insert(0, {'title': task, 'done': false});
-    });
-  }
-
-  void _toggleComplete(int index) {
-    if (index >= 0 && index < _tasks.length) {
-      setState(() {
-        _tasks[index]['done'] = !_tasks[index]['done'];
-      });
-      _iconController.forward(from: 0);
-    }
-  }
-
-  void _removeTask(int index) {
-    if (index >= 0 && index < _tasks.length) {
-      setState(() {
-        _tasks.removeAt(index);
-      });
-    }
-  }
-
   void _showAddTaskSheet() {
     showModalBottomSheet(
       context: context,
@@ -61,53 +39,36 @@ class _TaskScreenState extends State<TaskScreen>
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => AddTaskSheet(onSubmit: _addTask),
+      builder: (_) => const AddTaskSheet(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final taskProvider = context.watch<TaskProvider>();
+
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
             const Header(),
             Expanded(
-              // esta previene que las animaciones se repitan cuando se hace scroll en la pantalla (automáticamente actualiza la animación)
               child: AnimationLimiter(
-                // estas son las nuevas animaciones que vamos a usar en nuestra pantalla
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: _tasks.length, // cantidad de tareas que tenemos
+                  itemCount: taskProvider.tasks.length,
                   itemBuilder: (context, index) {
-                    final task = _tasks[index];
-                    // aquí se define la posición y la duración de la animación
+                    final task = taskProvider.tasks[index];
                     return AnimationConfiguration.staggeredList(
                       position: index,
-                      duration: const Duration(milliseconds: 400),
-                      // permite que cada una de las tareas entren deslizando desde abajo
+                      duration: const Duration(milliseconds: 500),
                       child: SlideAnimation(
-                        verticalOffset: 50.0,
-                        // permite que cada una de las tareas entren con un efecto de desvanecimiento
+                        verticalOffset: 30.0,
                         child: FadeInAnimation(
-                          // se define widget para deslizar tareas a la izquierda
                           child: Dismissible(
-                            key: ValueKey(task['title']),
-                            direction:
-                                DismissDirection
-                                    .endToStart, // deslizar de derecha a izquierda
-                            onDismissed: (_) {
-                              final removedTask = task;
-                              _removeTask(index);
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    '${removedTask['title']} eliminado',
-                                  ),
-                                  duration: const Duration(seconds: 2),
-                                ),
-                              );
-                            },
+                            key: ValueKey(task.title),
+                            direction: DismissDirection.endToStart,
+                            onDismissed: (_) => taskProvider.removeTask(index),
                             background: Container(
                               alignment: Alignment.centerRight,
                               padding: const EdgeInsets.symmetric(
@@ -118,7 +79,7 @@ class _TaskScreenState extends State<TaskScreen>
                                 vertical: 8,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.red.shade400,
+                                color: Colors.red.shade300,
                                 borderRadius: BorderRadius.circular(16),
                               ),
                               child: const Icon(
@@ -127,11 +88,22 @@ class _TaskScreenState extends State<TaskScreen>
                               ),
                             ),
                             child: TaskCard(
-                              title: task['title'],
-                              isDone: task['done'],
-                              onToggle: () => _toggleComplete(index),
-                              onDelete: () => _removeTask(index),
+                              ValueKey(task.title),
+                              title: task.title,
+                              isDone: task.done,
+                              vencimiento: task.vencimiento,
+                              onToggle: () {
+                                taskProvider.toggleTask(index);
+                                _iconController.forward(from: 0);
+                              },
+                              onDelete: () => taskProvider.removeTask(index),
                               iconRotation: _iconController,
+                              onTitleChanged: (nuevoTitulo) {
+                                taskProvider.updateTaskTitle(
+                                  index,
+                                  nuevoTitulo,
+                                );
+                              },
                             ),
                           ),
                         ),
@@ -146,16 +118,10 @@ class _TaskScreenState extends State<TaskScreen>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddTaskSheet,
-        backgroundColor: Colors.deepPurple,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        // aquí se define el icono que se va a mostrar en el botón flotante
-        // y se le asigna la animación que se va a usar
-        // y necesita de un AnimationController para poder animar el icono. un cambio entre iconos evento y agregar tarea
+        backgroundColor: Colors.pinkAccent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: AnimatedIcon(
-          // -CAMBIO DE ICONO ANIMADO-
-          // cambié el add_event por ellipsis_search
-          // para que el icono cambie de un icono de agregar tarea a un icono de búsqueda
-          icon: AnimatedIcons.search_ellipsis,
+          icon: AnimatedIcons.add_event,
           progress: _iconController,
         ),
       ),
