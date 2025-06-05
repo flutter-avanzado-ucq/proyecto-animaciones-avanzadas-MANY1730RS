@@ -88,7 +88,7 @@ class _TaskScreenState extends State<TaskScreen>
                               ),
                             ),
                             child: TaskCard(
-                              ValueKey(task.title),
+                              key: ValueKey(task.title),
                               title: task.title,
                               isDone: task.done,
                               vencimiento: task.vencimiento,
@@ -99,10 +99,10 @@ class _TaskScreenState extends State<TaskScreen>
                               onDelete: () => taskProvider.removeTask(index),
                               iconRotation: _iconController,
                               onTitleChanged: (nuevoTitulo) {
-                                taskProvider.updateTaskTitle(
-                                  index,
-                                  nuevoTitulo,
-                                );
+                                taskProvider.updateTask(index, nuevoTitulo);
+                              },
+                              onEdit: () {
+                                _showEditTaskDialog(context, index, task.title);
                               },
                             ),
                           ),
@@ -127,4 +127,47 @@ class _TaskScreenState extends State<TaskScreen>
       ),
     );
   }
+}
+
+void _showEditTaskDialog(BuildContext context, int index, String currentTitle) {
+  final taskProvider = context.read<TaskProvider>();
+  final TextEditingController _controller = TextEditingController(
+    text: currentTitle,
+  );
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Editar tarea'),
+        content: TextField(
+          controller: _controller,
+          autofocus: true,
+          decoration: const InputDecoration(labelText: 'Nuevo título'),
+          onSubmitted: (value) {
+            if (value.trim().isNotEmpty) {
+              taskProvider.updateTask(index, value.trim());
+              Navigator.of(context).pop();
+            }
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final newTitle = _controller.text.trim();
+              if (newTitle.isNotEmpty) {
+                taskProvider.updateTask(index, newTitle);
+                Navigator.of(context).pop();
+              }
+            },
+            child: const Text('Guardar'),
+          ),
+        ],
+      );
+    },
+  );
 }

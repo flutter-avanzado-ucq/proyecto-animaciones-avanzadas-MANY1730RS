@@ -6,10 +6,6 @@ import 'package:intl/intl.dart';
 class AddTaskSheet extends StatefulWidget {
   const AddTaskSheet({super.key});
 
-  //final Function(String) onSubmit;
-
-  //const AddTaskSheet({super.key, required this.onSubmit});
-
   @override
   State<AddTaskSheet> createState() => _AddTaskSheetState();
 }
@@ -24,11 +20,9 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
     super.dispose();
   }
 
-  //navegar entre pantallas
   void _submit() {
     final text = _controller.text.trim();
     if (text.isNotEmpty) {
-      // widget.onSubmit(text);
       Provider.of<TaskProvider>(
         context,
         listen: false,
@@ -36,8 +30,6 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
       Navigator.pop(context);
     }
   }
-  // Método para mostrar un selector de fecha al usuario y guardar la fecha seleccionada en la variable _selectFecha.
-  // Si el usuario selecciona una fecha, se actualiza el estado para reflejar el cambio en la interfaz.
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
@@ -70,8 +62,18 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-          // Fila que contiene un texto que muestra la fecha seleccionada o un mensaje por defecto si no hay fecha,
-          // y un botón para abrir el selector de fecha (_pickDate).
+
+          // AÑADIDO EL CAMPO DE TEXTO PARA EL NOMBRE DE LA TAREA
+          TextField(
+            controller: _controller,
+            decoration: const InputDecoration(
+              labelText: 'Nombre de la tarea',
+              border: OutlineInputBorder(),
+            ),
+          ),
+
+          const SizedBox(height: 12),
+
           Row(
             children: [
               Expanded(
@@ -90,6 +92,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
           ),
 
           const SizedBox(height: 12),
+
           ElevatedButton.icon(
             onPressed: _submit,
             icon: const Icon(Icons.check),

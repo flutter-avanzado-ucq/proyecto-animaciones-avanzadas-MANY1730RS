@@ -31,10 +31,9 @@ class TaskProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateTaskTitle(int index, String nuevoTitulo) {
-    if (index >= 0 && index < _tasks.length) {
-      _tasks[index].title = nuevoTitulo;
-      notifyListeners();
-    }
+  void updateTask(int index, String newTitle, {DateTime? newDate}) {
+    _tasks[index].title = newTitle;
+    _tasks[index].vencimiento = newDate;
+    notifyListeners();
   }
 }

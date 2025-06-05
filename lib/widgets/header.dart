@@ -20,16 +20,14 @@ class Header extends StatelessWidget {
         children: [
           const CircleAvatar(
             radius: 24,
-            backgroundImage: NetworkImage(
-              'https://i.pravatar.cc/150?img=47',
-            ),
+            backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=47'),
           ),
           const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
               Text(
-                'Hola, Liliana 👋',
+                'Hola, Yusmany 👋',
                 style: TextStyle(color: Colors.white, fontSize: 18),
               ),
               Text(
@@ -37,7 +35,7 @@ class Header extends StatelessWidget {
                 style: TextStyle(color: Colors.white70, fontSize: 14),
               ),
             ],
-          )
+          ),
         ],
       ),
     );

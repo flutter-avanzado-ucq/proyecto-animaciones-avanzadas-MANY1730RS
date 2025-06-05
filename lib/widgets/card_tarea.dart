@@ -7,20 +7,21 @@ class TaskCard extends StatefulWidget {
   final bool isDone;
   final VoidCallback onToggle;
   final VoidCallback onDelete;
+  final VoidCallback onEdit; // Nuevo callback para editar
   final Animation<double> iconRotation;
   final DateTime? vencimiento;
-  final ValueChanged<String> onTitleChanged; // Nuevo callback
+  final ValueChanged<String> onTitleChanged;
 
-  const TaskCard(
-    ValueKey<String> valueKey, {
+  const TaskCard({
     super.key,
     required this.title,
     required this.isDone,
     required this.onToggle,
     required this.onDelete,
+    required this.onEdit,
     required this.iconRotation,
     required this.vencimiento,
-    required this.onTitleChanged, // Nuevo callback
+    required this.onTitleChanged,
   });
 
   @override
@@ -121,9 +122,18 @@ class _TaskCardState extends State<TaskCard> {
                 ),
             ],
           ),
-          trailing: IconButton(
-            icon: const Icon(Icons.delete, color: Colors.redAccent),
-            onPressed: widget.onDelete,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.edit, color: Colors.blueAccent),
+                onPressed: widget.onEdit,
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete, color: Colors.redAccent),
+                onPressed: widget.onDelete,
+              ),
+            ],
           ),
         ),
       ),
