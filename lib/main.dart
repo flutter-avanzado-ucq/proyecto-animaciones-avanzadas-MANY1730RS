@@ -4,8 +4,13 @@ import 'screens/tarea_screen.dart';
 import 'tema/tema_app.dart';
 import 'package:provider/provider.dart';
 import 'provider_task/task_provider.dart' as task_provider;
+import 'services/notification_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Asegura que los widgets estén inicializados antes de ejecutar el código
+  await NotificationService.initializeNotifications(); // Inicializa el servicio de notificaciones
+  await NotificationService.requestPermissions(); // Solicita permisos de notificación
+
   runApp(
     ChangeNotifierProvider(
       create:

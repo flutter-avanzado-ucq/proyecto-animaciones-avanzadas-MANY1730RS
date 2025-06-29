@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tareas/provider_task/task_provider.dart';
 import 'package:intl/intl.dart';
+import 'package:tareas/services/notification_service.dart';
 
 class AddTaskSheet extends StatefulWidget {
   const AddTaskSheet({super.key});
@@ -20,13 +21,33 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
     super.dispose();
   }
 
-  void _submit() {
+  void _submit() async {
     final text = _controller.text.trim();
     if (text.isNotEmpty) {
+      // 1. Agrega la tarea al provider
       Provider.of<TaskProvider>(
         context,
         listen: false,
       ).addTask(text, vencimiento: _selectFecha);
+
+      // 2. Enviar notificación inmediata
+      await NotificationService.showImmediateNotification(
+        title: 'Nueva tarea',
+        body: 'Has agregado la tarea: $text',
+        payload: 'Tarea: $text',
+      );
+
+      // 3. Programar recordatorio si hay fecha
+      if (_selectFecha != null) {
+        await NotificationService.scheduleNotification(
+          title: 'Recordatorio de tarea',
+          body: 'No olvides: $text',
+          scheduledDate: _selectFecha!,
+          payload:
+              'Tarea programada: $text para ${DateFormat('dd/MM/yyyy').format(_selectFecha!)}',
+        );
+      }
+
       Navigator.pop(context);
     }
   }
@@ -62,18 +83,15 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
-
-          // AÑADIDO EL CAMPO DE TEXTO PARA EL NOMBRE DE LA TAREA
           TextField(
             controller: _controller,
             decoration: const InputDecoration(
               labelText: 'Nombre de la tarea',
               border: OutlineInputBorder(),
             ),
+            onSubmitted: (_) => _submit(),
           ),
-
           const SizedBox(height: 12),
-
           Row(
             children: [
               Expanded(
@@ -90,9 +108,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
               ),
             ],
           ),
-
           const SizedBox(height: 12),
-
           ElevatedButton.icon(
             onPressed: _submit,
             icon: const Icon(Icons.check),

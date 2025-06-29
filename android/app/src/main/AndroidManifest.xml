@@ -1,4 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- ESTOS PERMISOS SON PARA LA PRACTICA 17 DE JUNIO -->
+<!-- Estos permisos son necesarios para que la aplicacion pueda recibir notificaciones y poder programar tareas al reiniciar el dispositivo -->
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+<uses-permission android:name="android.permission.RECIVE_BOOT_COMPLETED"/>
+
     <application
         android:label="tareas"
         android:name="${applicationName}"
@@ -30,6 +35,24 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- estos que se agregan son para la practica 17 de junio -->
+        <!-- son necesarios porque android no ejecuta codigo en segundo plano y se necesita mantener 
+                las notificaciones programadas al reiniciar el dispositivo 
+                y que las notificaciones se ejecuten aunque la app este cerrada-->
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
+            android:enabled="true"
+            android:exported="true"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

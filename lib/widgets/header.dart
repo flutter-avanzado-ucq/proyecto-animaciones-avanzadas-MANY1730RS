@@ -20,7 +20,9 @@ class Header extends StatelessWidget {
         children: [
           const CircleAvatar(
             radius: 24,
-            backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=47'),
+            backgroundImage: NetworkImage(
+              'https://i.pinimg.com/736x/e8/78/aa/e878aa63298328d93815691fe75cb2ec.jpg',
+            ),
           ),
           const SizedBox(width: 12),
           Column(
